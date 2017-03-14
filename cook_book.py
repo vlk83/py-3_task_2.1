@@ -3,45 +3,30 @@
 def get_cook_book_dict():
     with open('list_of_recipes.txt', 'r', encoding='utf-8') as f:
         
-        # создаем словарь в который поместим рецепты из файла
         cook_book = {}
-        
-        # создаем список построчным чтением файла
-        content = [line.strip() for line in f]
-        
-        # удаляем какой-то странный символ вначале списка
-        # погуглил - хз, что-то связано с кодировками юникода )
-        content[0] = content[0].replace('\ufeff', '')
+        dishes_number = 0
 
-        # проходимся по списку и ищем значение с количеством ингридиетов
-        # от него и пляшем
-        for counter, value in enumerate(content):
-            if value.isdigit():
-                ingridients_number = int(value)
+        for line in f:
+            if line.strip().isdigit():
+                dishes_number += 1
+        f.seek(0)
+
+        for _ in range(dishes_number):
+            dish = f.readline().strip().replace('\ufeff', '')
+            ingridients_number = int(f.readline().strip())
+            ingridient_list = []
+            for _ in range(ingridients_number):
                 
-                # название блюда - это предыдущий элемент списка
-                dish = content[counter-1]
+                ingridient_name, quantity, measure = f.readline().strip().split(' | ')
+                ingridient_dict = {}
+                ingridient_dict['ingridient_name'] = ingridient_name
+                ingridient_dict['quantity'] = int(quantity)
+                ingridient_dict['measure'] = measure
+                ingridient_list.append(ingridient_dict)
                 
-                # создаем список для ингридиентов каждого блюда
-                ingridient_list = []
-
-                # и путём расщепления строчек последующих элементов списка
-                for i in range(ingridients_number):
-                    
-                    ingridient_name, quantity, measure = content[counter+i+1].split(' | ')
-
-                    ingridient_dict = {}
-                    ingridient_dict['ingridient_name'] = ingridient_name
-                    ingridient_dict['quantity'] = int(quantity)
-                    ingridient_dict['measure'] = measure
-                    
-                    # складываем в него словари с характеристиками этих ингридиентов
-                    ingridient_list.append(ingridient_dict)
-                    
-                # добавляем в словарь рецептов блюдо
-                cook_book[dish] = ingridient_list
-
-        return cook_book
+            cook_book[dish] = ingridient_list
+            f.readline()
+    return cook_book
 
 #########################################################################
 def get_shop_list_by_dishes(dishes, person_count, cook_book):
