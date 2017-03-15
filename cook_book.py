@@ -4,15 +4,10 @@ def get_cook_book_dict():
     with open('list_of_recipes.txt', 'r', encoding='utf-8') as f:
         
         cook_book = {}
-        dishes_number = 0
-
-        for line in f:
-            if line.strip().isdigit():
-                dishes_number += 1
-        f.seek(0)
-
-        for _ in range(dishes_number):
-            dish = f.readline().strip().replace('\ufeff', '')
+        line = f.readline()
+        
+        while line:
+            dish = line.strip().replace('\ufeff', '')
             ingridients_number = int(f.readline().strip())
             ingridient_list = []
             for _ in range(ingridients_number):
@@ -26,6 +21,7 @@ def get_cook_book_dict():
                 
             cook_book[dish] = ingridient_list
             f.readline()
+            line = f.readline()
     return cook_book
 
 #########################################################################
